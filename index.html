@@ -541,6 +541,7 @@ textarea.form-control { resize: vertical; min-height: 68px; }
             <button class="btn btn-primary btn-sm" id="btnStart" onclick="startRecording()">⏺ Start</button>
             <button class="btn btn-danger btn-sm" id="btnStop" onclick="stopRecording()" disabled>⏹ Stop</button>
             <button class="btn btn-ghost btn-sm" id="btnBlurMode" onclick="toggleBlurMode()" disabled title="Draw blur zone on screen">🔲 Add Blur Zone</button>
+            <button class="btn btn-ghost btn-sm" id="btnPresets" onclick="togglePresetPanel()" disabled title="Apply a PHI preset">⚡ PHI Presets</button>
             <button class="btn btn-ghost btn-sm" id="btnDiscard" onclick="discardRecording()" style="display:none">🗑 Discard</button>
             <div class="timer" id="timer">00:00</div>
           </div>
@@ -1045,7 +1046,7 @@ function discardRecording() {
   blurZones = []; postZones = [];
   renderZoneList(); renderPostZoneList();
   document.getElementById('presetPanel').style.display = 'none';
-  document.getElementById('btnPresets').disabled = true;
+  const _pb = document.getElementById('btnPresets'); if (_pb) _pb.disabled = true;
   hideAlert('alertRecord'); hideAlert('alertSuccess'); hideAlert('alertError');
   hipaaConfirmed = false;
 }
