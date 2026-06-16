@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metro Training Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --navy: #0D2545;
+  --navy-mid: #163460;
+  --navy-light: #1E4080;
+  --teal: #1A8A8A;
+  --teal-light: #22AAAA;
+  --teal-pale: #E8F5F5;
+  --gold: #C89A2E;
+  --gold-light: #E8B84B;
+  --gold-pale: #FDF6E3;
+  --off-white: #F3F6FA;
+  --light-gray: #E2E8F2;
+  --mid-gray: #8A9BB5;
+  --text: #1A2535;
+  --red: #C0392B;
+  --red-pale: #FDEDEC;
+  --green: #1A7340;
+  --green-pale: #EAFAF1;
+  --shadow-sm: 0 1px 3px rgba(13,37,69,0.08);
+  --shadow-md: 0 4px 16px rgba(13,37,69,0.12);
+  --shadow-lg: 0 12px 40px rgba(13,37,69,0.18);
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--navy);
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  border-bottom: 3px solid var(--gold);
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Serif Display', serif;
+  color: white; font-size: 17px; font-style: italic;
+}
+.logo-name { color: white; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; }
+.logo-tag { color: var(--gold); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1px; }
+
+nav { display: flex; gap: 3px; }
+.nav-btn {
+  padding: 7px 15px; border-radius: 7px; border: none; cursor: pointer;
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.55); background: transparent; transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+.nav-btn.active { background: var(--teal); color: white; }
+
+/* ── LAYOUT ── */
+main { max-width: 1140px; margin: 0 auto; padding: 24px 20px 60px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px; color: var(--navy);
+  margin-bottom: 4px;
+}
+.page-sub { color: var(--mid-gray); font-size: 13px; margin-bottom: 22px; }
+
+/* ── CARDS / PANELS ── */
+.card {
+  background: white; border-radius: var(--radius);
+  border: 1.5px solid var(--light-gray);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-header {
+  background: var(--navy); color: white;
+  padding: 12px 16px; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-header .accent-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+}
+.card-body { padding: 16px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 7px; border: none;
+  cursor: pointer; font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600; transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: 0.38; cursor: not-allowed; pointer-events: none; }
+.btn-primary { background: var(--teal); color: white; }
+.btn-primary:hover { background: var(--teal-light); }
+.btn-danger { background: var(--red); color: white; }
+.btn-danger:hover { background: #E74C3C; }
+.btn-gold { background: var(--gold); color: white; }
+.btn-gold:hover { background: var(--gold-light); }
+.btn-navy { background: var(--navy); color: white; }
+.btn-navy:hover { background: var(--navy-mid); }
+.btn-ghost {
+  background: white; color: var(--text);
+  border: 1.5px solid var(--light-gray);
+}
+.btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-block { width: 100%; justify-content: center; }
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--mid-gray); margin-bottom: 5px;
+}
+.form-control {
+  width: 100%; padding: 8px 11px;
+  border: 1.5px solid var(--light-gray); border-radius: 6px;
+  font-family: 'Inter', sans-serif; font-size: 13px;
+  color: var(--text); background: var(--off-white);
+  transition: border-color 0.15s;
+}
+.form-control:focus { outline: none; border-color: var(--teal); background: white; }
+textarea.form-control { resize: vertical; min-height: 68px; }
+
+/* ── STATUS / ALERTS ── */
+.alert {
+  padding: 10px 14px; border-radius: 7px;
+  font-size: 13px; line-height: 1.5;
+  display: none; margin-bottom: 12px;
+}
+.alert.show { display: flex; align-items: flex-start; gap: 8px; }
+.alert-info { background: #EBF5FB; color: #1558A0; border-left: 3px solid #1558A0; }
+.alert-success { background: var(--green-pale); color: var(--green); border-left: 3px solid var(--green); }
+.alert-error { background: var(--red-pale); color: var(--red); border-left: 3px solid var(--red); }
+.alert-warn { background: var(--gold-pale); color: #7A5C10; border-left: 3px solid var(--gold); }
+
+/* ── SPINNER ── */
+.spinner {
+  width: 15px; height: 15px; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: white; border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+.spinner-dark {
+  border-color: rgba(26,138,138,0.25);
+  border-top-color: var(--teal);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════════
+   LIBRARY VIEW
+══════════════════════════════════════════ */
+.filter-bar { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px; }
+.chip {
+  padding: 5px 14px; border-radius: 20px;
+  border: 1.5px solid var(--light-gray);
+  background: white; font-size: 12px; font-weight: 500;
+  cursor: pointer; color: var(--mid-gray); transition: all 0.15s;
+}
+.chip:hover { border-color: var(--teal); color: var(--teal); }
+.chip.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
+  gap: 18px;
+}
+.video-card {
+  background: white; border-radius: var(--radius);
+  border: 1.5px solid var(--light-gray);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden; cursor: pointer;
+  transition: all 0.18s;
+}
+.video-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--teal-light);
+  transform: translateY(-2px);
+}
+.video-thumb {
+  width: 100%; height: 158px;
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy-mid) 55%, var(--teal) 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.thumb-play {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  border: 2px solid rgba(255,255,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.video-card:hover .thumb-play { background: rgba(255,255,255,0.25); transform: scale(1.08); }
+.thumb-play svg { fill: white; margin-left: 3px; }
+.thumb-cat {
+  position: absolute; top: 9px; left: 9px;
+  padding: 3px 9px; border-radius: 12px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.thumb-dur {
+  position: absolute; bottom: 8px; right: 10px;
+  color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 600;
+}
+.hipaa-badge {
+  position: absolute; bottom: 8px; left: 9px;
+  background: rgba(26,115,64,0.85); color: white;
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 10px; letter-spacing: 0.03em;
+}
+.video-info { padding: 13px 14px 14px; }
+.video-title { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; line-height: 1.4; }
+.video-meta {
+  display: flex; justify-content: space-between;
+  align-items: center; font-size: 11px; color: var(--mid-gray);
+}
+.meta-delete {
+  background: none; border: none; cursor: pointer;
+  color: var(--mid-gray); padding: 2px 5px;
+  border-radius: 4px; font-size: 14px; line-height: 1;
+  transition: all 0.12s;
+}
+.meta-delete:hover { color: var(--red); background: var(--red-pale); }
+
+/* Category colors */
+.cat-oasis { background: rgba(26,138,138,0.15); color: #0F6B6B; }
+.cat-recert { background: rgba(200,154,46,0.18); color: #8A6010; }
+.cat-goals { background: rgba(13,37,69,0.12); color: var(--navy); }
+.cat-orders { background: rgba(52,130,219,0.15); color: #1558A0; }
+.cat-soc { background: rgba(130,60,170,0.15); color: #6B2FA0; }
+.cat-other { background: rgba(100,115,140,0.13); color: #4A5568; }
+
+.empty-state {
+  grid-column: 1/-1; text-align: center;
+  padding: 60px 20px; color: var(--mid-gray);
+}
+.empty-state .e-icon { font-size: 46px; margin-bottom: 12px; }
+.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   RECORD VIEW
+══════════════════════════════════════════ */
+.record-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Preview */
+.preview-wrap {
+  width: 100%; aspect-ratio: 16/9;
+  background: #080E1C; border-radius: 8px;
+  position: relative; overflow: hidden;
+  margin-bottom: 12px;
+}
+.preview-wrap video { width: 100%; height: 100%; object-fit: contain; display: none; }
+.preview-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.25); gap: 10px;
+}
+.preview-placeholder .ph-icon { font-size: 44px; }
+.preview-placeholder p { font-size: 13px; text-align: center; line-height: 1.5; }
+
+/* Blur canvas overlay */
+#blurCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 10;
+}
+#blurCanvas.drawing { pointer-events: all; cursor: crosshair; }
+
+/* Blur zone drag indicator */
+.blur-drawing-box {
+  position: absolute; border: 2px dashed rgba(255,200,0,0.8);
+  background: rgba(255,200,0,0.12); pointer-events: none;
+  z-index: 11; display: none;
+}
+
+/* Subtitle */
+.subtitle-overlay {
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.76); color: white;
+  padding: 7px 16px; border-radius: 7px;
+  font-size: 14px; line-height: 1.5;
+  max-width: 88%; text-align: center;
+  display: none; pointer-events: none; z-index: 20;
+}
+
+/* REC indicator */
+.rec-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(192,57,43,0.9); color: white;
+  padding: 4px 10px; border-radius: 12px;
+  font-size: 11px; font-weight: 700;
+  display: none; align-items: center; gap: 5px; z-index: 15;
+}
+.rec-dot { width: 7px; height: 7px; border-radius: 50%; background: white; animation: blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Controls row */
+.controls-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.timer { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--mid-gray); margin-left: auto; }
+.timer.recording { color: var(--red); }
+
+/* Blur zones list */
+.zone-list { margin-top: 10px; }
+.zone-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 10px; background: var(--off-white);
+  border-radius: 6px; margin-bottom: 6px;
+  font-size: 12px; color: var(--text);
+  border: 1px solid var(--light-gray);
+}
+.zone-label { display: flex; align-items: center; gap: 6px; }
+.zone-color { width: 10px; height: 10px; border-radius: 2px; background: rgba(255,200,0,0.6); border: 1px solid rgba(200,154,46,0.5); }
+.zone-del { background: none; border: none; cursor: pointer; color: var(--mid-gray); font-size: 13px; padding: 1px 4px; border-radius: 3px; }
+.zone-del:hover { color: var(--red); }
+
+/* Script cards */
+.script-card {
+  background: var(--off-white); border-radius: 7px;
+  padding: 10px 12px; margin-bottom: 8px;
+  border-left: 3px solid var(--teal); font-size: 12px; line-height: 1.6;
+}
+.script-ts { font-size: 10px; font-weight: 700; color: var(--teal); margin-bottom: 3px; letter-spacing: 0.05em; }
+
+/* Upload progress */
+.upload-progress { margin-bottom: 12px; display: none; }
+.upload-progress.show { display: block; }
+.progress-bar-wrap {
+  height: 6px; background: var(--light-gray);
+  border-radius: 3px; overflow: hidden; margin-top: 6px;
+}
+.progress-bar-fill {
+  height: 100%; background: var(--teal);
+  border-radius: 3px; width: 0%;
+  transition: width 0.3s ease;
+}
+.progress-label { font-size: 11px; color: var(--mid-gray); margin-bottom: 4px; }
+
+/* ══════════════════════════════════════════
+   POST-RECORDING BLUR EDITOR
+══════════════════════════════════════════ */
+#postBlurSection { display: none; margin-top: 16px; }
+.post-blur-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.timeline-wrap {
+  background: #080E1C; border-radius: 8px;
+  padding: 10px; position: relative;
+}
+.timeline-video { width: 100%; border-radius: 6px; }
+#postCanvas {
+  position: absolute; border-radius: 6px;
+  pointer-events: none; z-index: 5;
+}
+#postCanvas.drawing { pointer-events: all; cursor: crosshair; }
+
+/* ══════════════════════════════════════════
+   HIPAA MODAL
+══════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,12,25,0.82); z-index: 500;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: 12px;
+  width: 100%; max-width: 560px;
+  box-shadow: var(--shadow-lg); overflow: hidden;
+}
+.modal-header {
+  background: var(--navy); padding: 16px 20px;
+  display: flex; align-items: center; gap: 10px; color: white;
+}
+.modal-header .shield { font-size: 20px; }
+.modal-title { font-size: 15px; font-weight: 600; }
+.modal-body { padding: 20px; }
+.modal-intro {
+  font-size: 13px; color: var(--mid-gray);
+  line-height: 1.6; margin-bottom: 16px;
+  padding: 10px 12px; background: var(--gold-pale);
+  border-radius: 7px; border-left: 3px solid var(--gold);
+}
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--light-gray);
+}
+.check-item:last-child { border-bottom: none; }
+.check-item input[type=checkbox] {
+  width: 16px; height: 16px; margin-top: 2px;
+  accent-color: var(--teal); cursor: pointer; flex-shrink: 0;
+}
+.check-item label { font-size: 13px; line-height: 1.5; cursor: pointer; color: var(--text); }
+.modal-footer {
+  padding: 14px 20px; background: var(--off-white);
+  display: flex; gap: 10px; justify-content: flex-end;
+  border-top: 1px solid var(--light-gray);
+}
+
+/* ══════════════════════════════════════════
+   PLAYER MODAL
+══════════════════════════════════════════ */
+#playerModal .modal { max-width: 860px; }
+.player-video-wrap {
+  background: #080E1C; position: relative; aspect-ratio: 16/9;
+}
+.player-video-wrap video { width: 100%; height: 100%; object-fit: contain; }
+.player-subtitle {
+  position: absolute; bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.76); color: white;
+  padding: 8px 18px; border-radius: 7px;
+  font-size: 15px; line-height: 1.5; max-width: 85%;
+  text-align: center; display: none; pointer-events: none; z-index: 10;
+}
+.player-body { padding: 16px 20px 20px; }
+.player-meta { display: flex; gap: 16px; font-size: 12px; color: var(--mid-gray); flex-wrap: wrap; margin-bottom: 10px; }
+.player-desc { font-size: 13px; color: var(--mid-gray); line-height: 1.6; margin-bottom: 14px; }
+.script-section h4 {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--navy); margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">M</div>
+    <div>
+      <div class="logo-name">Metro Mobile Health Care</div>
+      <div class="logo-tag">Training Studio</div>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-btn active" id="navLibrary" onclick="showView('library')">📚 Library</button>
+    <button class="nav-btn" id="navRecord" onclick="showView('record')">⏺ Record</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════
+     LIBRARY VIEW
+══════════════════════════════════════════ -->
+<div class="view active" id="view-library">
+  <div class="page-title">Training Library</div>
+  <div class="page-sub">Browse and watch clinical documentation training recordings</div>
+
+  <div class="filter-bar">
+    <div class="chip active" onclick="filterBy('all',this)">All</div>
+    <div class="chip" onclick="filterBy('oasis',this)">OASIS</div>
+    <div class="chip" onclick="filterBy('recert',this)">Recertification</div>
+    <div class="chip" onclick="filterBy('goals',this)">Goals</div>
+    <div class="chip" onclick="filterBy('orders',this)">Orders</div>
+    <div class="chip" onclick="filterBy('soc',this)">SOC / NOA</div>
+    <div class="chip" onclick="filterBy('other',this)">Other</div>
+  </div>
+
+  <div class="video-grid" id="videoGrid">
+    <div class="empty-state">
+      <div class="e-icon">⏳</div>
+      <h3>Loading library…</h3>
+      <p>Fetching videos from Supabase</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     RECORD VIEW
+══════════════════════════════════════════ -->
+<div class="view" id="view-record">
+  <div class="page-title">Record Training Video</div>
+  <div class="page-sub">Capture your screen, apply blur zones, then save to the shared library</div>
+
+  <div class="record-layout">
+
+    <!-- LEFT COL -->
+    <div>
+      <!-- Preview -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header">
+          <div class="accent-dot" style="background:var(--teal)"></div>
+          Screen Preview
+        </div>
+        <div class="card-body">
+          <div class="preview-wrap" id="previewWrap">
+            <div class="preview-placeholder" id="previewPlaceholder">
+              <div class="ph-icon">🖥️</div>
+              <p>Click <strong>Start Recording</strong><br>to begin screen capture</p>
+            </div>
+            <video id="previewVideo" muted playsinline></video>
+            <video id="playbackVideo" controls></video>
+            <canvas id="blurCanvas"></canvas>
+            <div class="blur-drawing-box" id="blurDrawingBox"></div>
+            <div class="subtitle-overlay" id="subtitleOverlay"></div>
+            <div class="rec-badge" id="recBadge">
+              <div class="rec-dot"></div> REC
+            </div>
+          </div>
+
+          <div class="controls-row">
+            <button class="btn btn-primary btn-sm" id="btnStart" onclick="startRecording()">⏺ Start</button>
+            <button class="btn btn-danger btn-sm" id="btnStop" onclick="stopRecording()" disabled>⏹ Stop</button>
+            <button class="btn btn-ghost btn-sm" id="btnBlurMode" onclick="toggleBlurMode()" disabled title="Draw blur zone on screen">🔲 Add Blur Zone</button>
+            <button class="btn btn-ghost btn-sm" id="btnDiscard" onclick="discardRecording()" style="display:none">🗑 Discard</button>
+            <div class="timer" id="timer">00:00</div>
+          </div>
+
+          <!-- Status -->
+          <div class="alert alert-info" id="alertRecord"></div>
+          <div class="alert alert-success" id="alertSuccess"></div>
+          <div class="alert alert-error" id="alertError"></div>
+
+          <!-- Upload progress -->
+          <div class="upload-progress" id="uploadProgress">
+            <div class="progress-label" id="progressLabel">Uploading to Supabase…</div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+          </div>
+
+          <!-- Blur zones list -->
+          <div id="blurZoneSection" style="display:none; margin-top:4px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mid-gray);margin-bottom:6px;">Active Blur Zones</div>
+            <div class="zone-list" id="zoneList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post-recording blur editor -->
+      <div class="card" id="postBlurSection">
+        <div class="card-header">
+          <div class="accent-dot" style="background:var(--gold)"></div>
+          Post-Recording Review — Add Blur Zones
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--mid-gray);margin-bottom:10px;">Scrub the video to find any PHI that slipped through, then draw blur zones to cover it. These will be saved with the video.</p>
+          <div class="timeline-wrap" style="position:relative;">
+            <video id="reviewVideo" class="timeline-video" controls style="display:block;"></video>
+            <canvas id="postCanvas"></canvas>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+            <button class="btn btn-ghost btn-sm" id="btnPostBlur" onclick="togglePostBlurMode()">🔲 Draw Blur Zone</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearPostZones()">Clear Post Zones</button>
+            <span style="font-size:11px;color:var(--mid-gray);margin-left:4px;" id="postZoneCount"></span>
+          </div>
+          <div class="zone-list" id="postZoneList" style="margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <!-- AI Script preview -->
+      <div class="card" id="scriptPreviewCard" style="display:none;margin-top:16px;">
+        <div class="card-header">
+          <div class="accent-dot" style="background:var(--gold)"></div>
+          AI Caption Script
+        </div>
+        <div class="card-body" id="scriptPreviewBody"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COL: form -->
+    <div class="card">
+      <div class="card-header">
+        <div class="accent-dot" style="background:var(--gold)"></div>
+        Video Details
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">Title *</label>
+          <input class="form-control" id="vidTitle" placeholder="e.g. How to Add Goals in Careficient">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-control" id="vidCategory">
+            <option value="">— Select —</option>
+            <option value="oasis">OASIS Documentation</option>
+            <option value="recert">Recertification</option>
+            <option value="goals">Goals Entry</option>
+            <option value="orders">Physician Orders</option>
+            <option value="soc">SOC / NOA</option>
+            <option value="other">Other / General</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" id="vidDesc" placeholder="Brief summary of what this video covers…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Instructor</label>
+          <input class="form-control" id="vidInstructor" placeholder="e.g. Stephen Mace, DPT">
+        </div>
+        <button class="btn btn-gold btn-block" id="btnSave" onclick="saveRecording()" disabled>
+          💾 Generate Script &amp; Save to Library
+        </button>
+        <p style="font-size:11px;color:var(--mid-gray);margin-top:8px;text-align:center;">Video uploads to Supabase Storage and appears in the shared library instantly.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     HIPAA CHECKLIST MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="hipaaModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="shield">🛡️</span>
+      <span class="modal-title">HIPAA Pre-Recording Compliance Check</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-intro">
+        Before recording, confirm each item below. This acknowledgment is logged with your name and timestamp for Metro's HIPAA compliance records.
+      </div>
+      <div id="checklistItems">
+        <div class="check-item">
+          <input type="checkbox" id="chk1">
+          <label for="chk1">I am using a <strong>test or demo patient</strong>, not a real patient record — OR I have placed blur zones over all patient-identifiable fields.</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="chk2">
+          <label for="chk2">All <strong>patient names, DOBs, MRNs, and addresses</strong> are either hidden or covered by a blur zone.</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="chk3">
+          <label for="chk3">No <strong>Medicare/Medicaid numbers, insurance IDs, or billing identifiers</strong> are visible on screen.</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="chk4">
+          <label for="chk4">No <strong>physician names linked to a specific patient</strong> are visible.</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="chk5">
+          <label for="chk5">I understand this recording will be <strong>stored and accessible to Metro clinical staff</strong>.</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="chk6">
+          <label for="chk6">I confirm this recording contains <strong>no Protected Health Information (PHI)</strong> to the best of my knowledge.</label>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;margin-bottom:0;">
+        <label class="form-label">Your Name (for audit log)</label>
+        <input class="form-control" id="hipaaName" placeholder="e.g. Stephen Mace, DPT">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeHipaaModal()">Cancel</button>
+      <button class="btn btn-primary" id="btnConfirmHipaa" onclick="confirmHipaa()" disabled>
+        ✅ I Confirm — Start Recording
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PLAYER MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="playerModal">
+  <div class="modal" id="playerModalInner">
+    <div class="modal-header" style="justify-content:space-between;">
+      <span class="modal-title" id="playerTitle">Video</span>
+      <button style="background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:20px;line-height:1;" onclick="closePlayer()">✕</button>
+    </div>
+    <div class="player-video-wrap">
+      <video id="playerVideo" controls></video>
+      <div class="player-subtitle" id="playerSubtitle"></div>
+    </div>
+    <div class="player-body">
+      <div class="player-desc" id="playerDesc"></div>
+      <div class="player-meta" id="playerMeta"></div>
+      <div class="script-section" id="playerScript">
+        <h4>📋 Instructional Caption Script</h4>
+        <div id="playerScriptBody"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const SUPABASE_URL = 'https://zxserlkhwkfoqiepurdr.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4c2VybGtod2tmb3FpZXB1cmRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NDM1NDIsImV4cCI6MjA5NjAxOTU0Mn0.cA9LJSn5t4sIbIemdQGQsdwtQFwb-6Q9xIZi48UYq34';
+const BUCKET = 'training-videos';
+const TABLE = 'training_videos';
+const AUDIT_TABLE = 'hipaa_checklist_log';
+
+const CAT_NAMES = { oasis:'OASIS', recert:'Recert', goals:'Goals', orders:'Orders', soc:'SOC/NOA', other:'Other' };
+const CAT_COLORS = { oasis:'cat-oasis', recert:'cat-recert', goals:'cat-goals', orders:'cat-orders', soc:'cat-soc', other:'cat-other' };
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordedBlob = null;
+let recordedUrl = null;
+let timerInterval = null;
+let timerSec = 0;
+let currentFilter = 'all';
+let videoLibrary = [];
+let generatedScript = [];
+
+// Blur zones (pre-recording)
+let blurZones = [];
+let blurDrawing = false;
+let blurModeActive = false;
+let blurStart = null;
+let blurCurrentBox = null;
+
+// Post-recording blur zones
+let postZones = [];
+let postBlurModeActive = false;
+let postBlurStart = null;
+
+// HIPAA
+let hipaaConfirmed = false;
+let hipaaConfirmedBy = '';
+let hipaaConfirmedAt = null;
+
+// ═══════════════════════════════════════════════
+// SUPABASE HELPERS
+// ═══════════════════════════════════════════════
+async function sbFetch(path, opts = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...opts,
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...(opts.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function uploadToStorage(blob, path) {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': blob.type || 'video/webm',
+      'Cache-Control': '3600'
+    },
+    body: blob
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error('Storage upload failed: ' + err);
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.getElementById(id === 'library' ? 'navLibrary' : 'navRecord').classList.add('active');
+  if (id === 'library') loadLibrary();
+}
+
+// ═══════════════════════════════════════════════
+// LIBRARY
+// ═══════════════════════════════════════════════
+async function loadLibrary() {
+  const grid = document.getElementById('videoGrid');
+  grid.innerHTML = `<div class="empty-state"><div class="e-icon">⏳</div><h3>Loading…</h3></div>`;
+  try {
+    const data = await sbFetch(`${TABLE}?select=*&order=created_at.desc`);
+    videoLibrary = data || [];
+    renderLibrary();
+  } catch(e) {
+    grid.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div><h3>Could not load library</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function filterBy(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderLibrary();
+}
+
+function renderLibrary() {
+  const grid = document.getElementById('videoGrid');
+  const list = currentFilter === 'all' ? videoLibrary : videoLibrary.filter(v => v.category === currentFilter);
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="e-icon">🎬</div><h3>${currentFilter==='all'?'No videos yet':'No videos in this category'}</h3><p>${currentFilter==='all'?'Switch to Record to create your first training video.':''}</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(v => `
+    <div class="video-card" onclick="openPlayer('${v.id}')">
+      <div class="video-thumb">
+        <span class="thumb-cat ${CAT_COLORS[v.category]||'cat-other'}">${CAT_NAMES[v.category]||'Other'}</span>
+        <div class="thumb-play">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <span class="thumb-dur">${fmtTime(v.duration_seconds||0)}</span>
+        ${v.hipaa_confirmed ? '<span class="hipaa-badge">✓ HIPAA</span>' : ''}
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">
+          <span>${v.instructor||'Metro'}</span>
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span>${fmtDate(v.created_at)}</span>
+            <button class="meta-delete" onclick="event.stopPropagation();deleteVideo('${v.id}','${encodeURIComponent(v.storage_path||'')}')">✕</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function deleteVideo(id, encodedPath) {
+  if (!confirm('Delete this training video? This cannot be undone.')) return;
+  try {
+    // Delete from storage
+    const storagePath = decodeURIComponent(encodedPath);
+    if (storagePath) {
+      await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${storagePath}`, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+      });
+    }
+    // Delete from DB
+    await sbFetch(`${TABLE}?id=eq.${id}`, { method: 'DELETE' });
+    await loadLibrary();
+  } catch(e) {
+    alert('Delete failed: ' + e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// HIPAA CHECKLIST
+// ═══════════════════════════════════════════════
+function openHipaaModal() {
+  // Reset
+  ['chk1','chk2','chk3','chk4','chk5','chk6'].forEach(id => document.getElementById(id).checked = false);
+  document.getElementById('hipaaName').value = '';
+  document.getElementById('btnConfirmHipaa').disabled = true;
+  document.getElementById('hipaaModal').classList.add('open');
+
+  // Watch checkboxes
+  ['chk1','chk2','chk3','chk4','chk5','chk6'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateHipaaBtn);
+  });
+  document.getElementById('hipaaName').addEventListener('input', updateHipaaBtn);
+}
+
+function updateHipaaBtn() {
+  const allChecked = ['chk1','chk2','chk3','chk4','chk5','chk6'].every(id => document.getElementById(id).checked);
+  const hasName = document.getElementById('hipaaName').value.trim().length > 0;
+  document.getElementById('btnConfirmHipaa').disabled = !(allChecked && hasName);
+}
+
+function closeHipaaModal() {
+  document.getElementById('hipaaModal').classList.remove('open');
+}
+
+async function confirmHipaa() {
+  hipaaConfirmedBy = document.getElementById('hipaaName').value.trim();
+  hipaaConfirmedAt = new Date().toISOString();
+  hipaaConfirmed = true;
+  closeHipaaModal();
+  await beginRecording();
+}
+
+// ═══════════════════════════════════════════════
+// RECORDING
+// ═══════════════════════════════════════════════
+function startRecording() {
+  openHipaaModal();
+}
+
+async function beginRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: 30 },
+      audio: true
+    });
+
+    const pv = document.getElementById('previewVideo');
+    document.getElementById('previewPlaceholder').style.display = 'none';
+    pv.style.display = 'block';
+    pv.srcObject = stream;
+    pv.play();
+
+    recordedChunks = [];
+    recordedBlob = null;
+    if (recordedUrl) { URL.revokeObjectURL(recordedUrl); recordedUrl = null; }
+
+    const opts = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? { mimeType: 'video/webm;codecs=vp9' }
+      : { mimeType: 'video/webm' };
+
+    mediaRecorder = new MediaRecorder(stream, opts);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = handleStop;
+    mediaRecorder.start(500);
+
+    stream.getVideoTracks()[0].onended = () => stopRecording();
+
+    document.getElementById('btnStart').disabled = true;
+    document.getElementById('btnStop').disabled = false;
+    document.getElementById('btnBlurMode').disabled = false;
+    document.getElementById('recBadge').style.display = 'flex';
+    startTimer();
+    showAlert('alertRecord', `Recording with ${blurZones.length} blur zone(s) active.`);
+  } catch(e) {
+    if (e.name !== 'NotAllowedError') showAlert('alertError', 'Could not start screen capture: ' + e.message);
+    hipaaConfirmed = false;
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+  stopTimer();
+  document.getElementById('recBadge').style.display = 'none';
+  document.getElementById('btnStop').disabled = true;
+  document.getElementById('btnBlurMode').disabled = true;
+  if (blurModeActive) toggleBlurMode();
+  hideAlert('alertRecord');
+}
+
+function handleStop() {
+  recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
+  recordedUrl = URL.createObjectURL(recordedBlob);
+
+  const pv = document.getElementById('previewVideo');
+  pv.style.display = 'none';
+  pv.srcObject = null;
+
+  const pb = document.getElementById('playbackVideo');
+  pb.src = recordedUrl;
+  pb.style.display = 'block';
+
+  // Set up post-blur review
+  const rv = document.getElementById('reviewVideo');
+  rv.src = recordedUrl;
+  document.getElementById('postBlurSection').style.display = 'block';
+  setupPostCanvas();
+
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnDiscard').style.display = '';
+  document.getElementById('btnSave').disabled = false;
+  showAlert('alertSuccess', `✅ Recording complete (${fmtTime(timerSec)}). Review below, then fill in details and save.`);
+}
+
+function discardRecording() {
+  if (!confirm('Discard this recording?')) return;
+  recordedBlob = null;
+  if (recordedUrl) { URL.revokeObjectURL(recordedUrl); recordedUrl = null; }
+  document.getElementById('playbackVideo').style.display = 'none';
+  document.getElementById('playbackVideo').src = '';
+  document.getElementById('previewPlaceholder').style.display = '';
+  document.getElementById('btnDiscard').style.display = 'none';
+  document.getElementById('btnSave').disabled = true;
+  document.getElementById('postBlurSection').style.display = 'none';
+  document.getElementById('scriptPreviewCard').style.display = 'none';
+  timerSec = 0;
+  document.getElementById('timer').textContent = '00:00';
+  document.getElementById('timer').className = 'timer';
+  blurZones = []; postZones = [];
+  renderZoneList(); renderPostZoneList();
+  hideAlert('alertRecord'); hideAlert('alertSuccess'); hideAlert('alertError');
+  hipaaConfirmed = false;
+}
+
+// ═══════════════════════════════════════════════
+// BLUR ZONES (pre-recording)
+// ═══════════════════════════════════════════════
+function toggleBlurMode() {
+  blurModeActive = !blurModeActive;
+  const canvas = document.getElementById('blurCanvas');
+  const btn = document.getElementById('btnBlurMode');
+  if (blurModeActive) {
+    canvas.classList.add('drawing');
+    btn.textContent = '✋ Done Drawing';
+    btn.style.background = 'var(--gold)';
+    btn.style.color = 'white';
+    canvas.addEventListener('mousedown', blurMouseDown);
+    canvas.addEventListener('mousemove', blurMouseMove);
+    canvas.addEventListener('mouseup', blurMouseUp);
+  } else {
+    canvas.classList.remove('drawing');
+    btn.textContent = '🔲 Add Blur Zone';
+    btn.style.background = '';
+    btn.style.color = '';
+    canvas.removeEventListener('mousedown', blurMouseDown);
+    canvas.removeEventListener('mousemove', blurMouseMove);
+    canvas.removeEventListener('mouseup', blurMouseUp);
+  }
+}
+
+function getRelativePos(canvas, e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) / rect.width,
+    y: (e.clientY - rect.top) / rect.height
+  };
+}
+
+function blurMouseDown(e) {
+  blurDrawing = true;
+  blurStart = getRelativePos(e.target, e);
+  const box = document.getElementById('blurDrawingBox');
+  const wrap = document.getElementById('previewWrap');
+  const wr = wrap.getBoundingClientRect();
+  box.style.left = (blurStart.x * wr.width) + 'px';
+  box.style.top = (blurStart.y * wr.height) + 'px';
+  box.style.width = '0px'; box.style.height = '0px';
+  box.style.display = 'block';
+}
+
+function blurMouseMove(e) {
+  if (!blurDrawing) return;
+  const pos = getRelativePos(e.target, e);
+  const wrap = document.getElementById('previewWrap');
+  const wr = wrap.getBoundingClientRect();
+  const box = document.getElementById('blurDrawingBox');
+  const x = Math.min(blurStart.x, pos.x) * wr.width;
+  const y = Math.min(blurStart.y, pos.y) * wr.height;
+  const w = Math.abs(pos.x - blurStart.x) * wr.width;
+  const h = Math.abs(pos.y - blurStart.y) * wr.height;
+  box.style.left = x + 'px'; box.style.top = y + 'px';
+  box.style.width = w + 'px'; box.style.height = h + 'px';
+}
+
+function blurMouseUp(e) {
+  if (!blurDrawing) return;
+  blurDrawing = false;
+  document.getElementById('blurDrawingBox').style.display = 'none';
+  const pos = getRelativePos(e.target, e);
+  const zone = {
+    id: Date.now(),
+    x: Math.min(blurStart.x, pos.x),
+    y: Math.min(blurStart.y, pos.y),
+    w: Math.abs(pos.x - blurStart.x),
+    h: Math.abs(pos.y - blurStart.y),
+    label: 'Zone ' + (blurZones.length + 1)
+  };
+  if (zone.w > 0.02 && zone.h > 0.01) {
+    blurZones.push(zone);
+    drawBlurCanvas();
+    renderZoneList();
+  }
+}
+
+function drawBlurCanvas() {
+  const canvas = document.getElementById('blurCanvas');
+  const wrap = document.getElementById('previewWrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  blurZones.forEach(z => {
+    const x = z.x * canvas.width, y = z.y * canvas.height;
+    const w = z.w * canvas.width, h = z.h * canvas.height;
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,200,0,0.8)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(255,200,0,0.9)';
+    ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.fillText('🔲 ' + z.label, x + 4, y + 14);
+  });
+}
+
+function renderZoneList() {
+  const list = document.getElementById('zoneList');
+  const section = document.getElementById('blurZoneSection');
+  if (!blurZones.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = blurZones.map(z => `
+    <div class="zone-item">
+      <div class="zone-label"><div class="zone-color"></div>${z.label} (${Math.round(z.w*100)}% × ${Math.round(z.h*100)}%)</div>
+      <button class="zone-del" onclick="removeZone(${z.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeZone(id) {
+  blurZones = blurZones.filter(z => z.id !== id);
+  drawBlurCanvas();
+  renderZoneList();
+}
+
+// ═══════════════════════════════════════════════
+// POST-RECORDING BLUR
+// ═══════════════════════════════════════════════
+function setupPostCanvas() {
+  const video = document.getElementById('reviewVideo');
+  const canvas = document.getElementById('postCanvas');
+  const wrap = video.parentElement;
+  video.addEventListener('loadedmetadata', () => {
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0'; canvas.style.left = '0';
+    canvas.style.width = '100%'; canvas.style.height = '100%';
+    canvas.width = video.clientWidth || 640;
+    canvas.height = video.clientHeight || 360;
+    drawPostCanvas();
+  });
+}
+
+function togglePostBlurMode() {
+  postBlurModeActive = !postBlurModeActive;
+  const canvas = document.getElementById('postCanvas');
+  const btn = document.getElementById('btnPostBlur');
+  if (postBlurModeActive) {
+    canvas.classList.add('drawing');
+    btn.textContent = '✋ Done Drawing';
+    btn.style.background = 'var(--gold)'; btn.style.color = 'white';
+    canvas.addEventListener('mousedown', postMouseDown);
+    canvas.addEventListener('mousemove', postMouseMove);
+    canvas.addEventListener('mouseup', postMouseUp);
+  } else {
+    canvas.classList.remove('drawing');
+    btn.textContent = '🔲 Draw Blur Zone';
+    btn.style.background = ''; btn.style.color = '';
+    canvas.removeEventListener('mousedown', postMouseDown);
+    canvas.removeEventListener('mousemove', postMouseMove);
+    canvas.removeEventListener('mouseup', postMouseUp);
+  }
+}
+
+function postMouseDown(e) {
+  postBlurStart = getRelativePos(e.target, e);
+}
+function postMouseMove(e) {}
+function postMouseUp(e) {
+  if (!postBlurStart) return;
+  const pos = getRelativePos(e.target, e);
+  const video = document.getElementById('reviewVideo');
+  const zone = {
+    id: Date.now(),
+    x: Math.min(postBlurStart.x, pos.x),
+    y: Math.min(postBlurStart.y, pos.y),
+    w: Math.abs(pos.x - postBlurStart.x),
+    h: Math.abs(pos.y - postBlurStart.y),
+    timestamp: video.currentTime,
+    label: 'Post Zone ' + (postZones.length + 1)
+  };
+  if (zone.w > 0.02 && zone.h > 0.01) {
+    postZones.push(zone);
+    drawPostCanvas();
+    renderPostZoneList();
+  }
+  postBlurStart = null;
+}
+
+function drawPostCanvas() {
+  const canvas = document.getElementById('postCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  postZones.forEach(z => {
+    const x = z.x * canvas.width, y = z.y * canvas.height;
+    const w = z.w * canvas.width, h = z.h * canvas.height;
+    ctx.fillStyle = 'rgba(0,0,0,0.72)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,200,0,0.85)';
+    ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(255,220,50,0.95)';
+    ctx.font = 'bold 10px Inter';
+    ctx.fillText(z.label + (z.timestamp ? ` @${fmtTime(Math.floor(z.timestamp))}` : ''), x+3, y+13);
+  });
+}
+
+function renderPostZoneList() {
+  const list = document.getElementById('postZoneList');
+  const count = document.getElementById('postZoneCount');
+  count.textContent = postZones.length ? `${postZones.length} zone(s) added` : '';
+  list.innerHTML = postZones.map(z => `
+    <div class="zone-item">
+      <div class="zone-label"><div class="zone-color"></div>${z.label}${z.timestamp ? ` at ${fmtTime(Math.floor(z.timestamp))}` : ''}</div>
+      <button class="zone-del" onclick="removePostZone(${z.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removePostZone(id) {
+  postZones = postZones.filter(z => z.id !== id);
+  drawPostCanvas();
+  renderPostZoneList();
+}
+
+function clearPostZones() {
+  postZones = [];
+  drawPostCanvas();
+  renderPostZoneList();
+}
+
+// ═══════════════════════════════════════════════
+// SAVE + UPLOAD
+// ═══════════════════════════════════════════════
+async function saveRecording() {
+  const title = document.getElementById('vidTitle').value.trim();
+  const category = document.getElementById('vidCategory').value;
+  const desc = document.getElementById('vidDesc').value.trim();
+  const instructor = document.getElementById('vidInstructor').value.trim() || 'Metro Mobile Health Care';
+
+  if (!title) { showAlert('alertError', 'Please enter a video title.'); return; }
+  if (!category) { showAlert('alertError', 'Please select a category.'); return; }
+  if (!recordedBlob) { showAlert('alertError', 'No recording found. Please record first.'); return; }
+
+  hideAlert('alertError');
+  document.getElementById('btnSave').disabled = true;
+
+  // 1. Generate AI script
+  showProgress('Generating AI caption script…', 15);
+  let script = [];
+  try {
+    script = await generateScript(title, category, desc, timerSec);
+    generatedScript = script;
+    renderScriptPreview(script);
+  } catch(e) {
+    script = [{ ts: '0:00', text: 'Welcome to this Metro clinical training video. Follow along step by step.' }];
+  }
+
+  // 2. Upload video to Supabase Storage
+  showProgress('Uploading video to Supabase Storage…', 35);
+  const filename = `${Date.now()}-${title.replace(/[^a-z0-9]/gi,'_').toLowerCase()}.webm`;
+  let publicUrl = '';
+  try {
+    publicUrl = await uploadToStorage(recordedBlob, filename);
+    showProgress('Video uploaded successfully…', 75);
+  } catch(e) {
+    showAlert('alertError', 'Upload failed: ' + e.message);
+    document.getElementById('btnSave').disabled = false;
+    hideProgress();
+    return;
+  }
+
+  // 3. Save metadata to DB
+  showProgress('Saving to library…', 88);
+  const allZones = [...blurZones.map(z => ({...z, type:'pre'})), ...postZones.map(z => ({...z, type:'post'}))];
+  try {
+    const rows = await sbFetch(TABLE, {
+      method: 'POST',
+      body: JSON.stringify({
+        title, category,
+        description: desc,
+        instructor,
+        duration_seconds: timerSec,
+        storage_path: filename,
+        public_url: publicUrl,
+        script,
+        blur_zones: allZones,
+        hipaa_confirmed: hipaaConfirmed,
+        hipaa_confirmed_at: hipaaConfirmedAt,
+        created_by: hipaaConfirmedBy || 'admin'
+      })
+    });
+
+    // 4. Log HIPAA audit
+    if (hipaaConfirmed && rows && rows[0]) {
+      try {
+        await sbFetch(AUDIT_TABLE, {
+          method: 'POST',
+          body: JSON.stringify({
+            video_id: rows[0].id,
+            confirmed_by: hipaaConfirmedBy,
+            checklist_items: { all_six_confirmed: true },
+            confirmed_at: hipaaConfirmedAt
+          })
+        });
+      } catch(e) { /* audit log failure is non-fatal */ }
+    }
+  } catch(e) {
+    showAlert('alertError', 'Database save failed: ' + e.message);
+    document.getElementById('btnSave').disabled = false;
+    hideProgress();
+    return;
+  }
+
+  showProgress('Complete!', 100);
+  showAlert('alertSuccess', `✅ "${title}" saved and live in the library!`);
+
+  setTimeout(() => {
+    hideProgress();
+    showView('library');
+  }, 1400);
+}
+
+// ═══════════════════════════════════════════════
+// AI SCRIPT GENERATION
+// ═══════════════════════════════════════════════
+async function generateScript(title, category, desc, durationSec) {
+  const catMap = {
+    oasis: 'OASIS documentation in a home health EMR',
+    recert: 'Recertification planning and documentation',
+    goals: 'Functional goal entry and management',
+    orders: 'Physician orders and order management',
+    soc: 'Start of Care and Notice of Admission (NOA)',
+    other: 'General clinical workflow'
+  };
+  const mins = Math.ceil(durationSec/60) || 2;
+  const prompt = `You are a clinical documentation trainer for Metro Mobile Health Care, a PT-led home health staffing company in Oklahoma. Write a timed instructional caption script for a screen recording training video.
+
+Title: "${title}"
+Topic area: ${catMap[category]||'clinical workflow'}
+${desc ? 'Details: '+desc : ''}
+Duration: ~${mins} minute(s)
+
+Return ONLY a valid JSON array, no markdown, no explanation. Each object has:
+- "ts": timestamp string (e.g. "0:00", "0:20", "0:45", "1:10")
+- "text": 1-2 sentence instructional caption for that moment
+
+Generate 6-10 captions spaced ~15-25 seconds apart. Use plain clinical language. Reference Careficient EMR steps where applicable. Focus on what the viewer should look at and do.`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  const raw = (data.content || []).map(b => b.text || '').join('');
+  return JSON.parse(raw.replace(/```json|```/g, '').trim());
+}
+
+function renderScriptPreview(script) {
+  document.getElementById('scriptPreviewCard').style.display = 'block';
+  document.getElementById('scriptPreviewBody').innerHTML = script.map(s => `
+    <div class="script-card">
+      <div class="script-ts">⏱ ${s.ts}</div>
+      ${s.text}
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════
+// PLAYER
+// ═══════════════════════════════════════════════
+function openPlayer(id) {
+  const v = videoLibrary.find(x => x.id === id);
+  if (!v) return;
+
+  document.getElementById('playerTitle').textContent = v.title;
+  document.getElementById('playerDesc').textContent = v.description || '';
+  document.getElementById('playerMeta').innerHTML = `
+    <span>👤 ${v.instructor}</span>
+    <span>📅 ${fmtDate(v.created_at)}</span>
+    <span>⏱ ${fmtTime(v.duration_seconds||0)}</span>
+    ${v.hipaa_confirmed ? '<span style="background:var(--green-pale);color:var(--green);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">✓ HIPAA Confirmed</span>' : ''}
+  `;
+
+  const video = document.getElementById('playerVideo');
+  video.src = v.public_url || '';
+
+  // Script
+  const script = v.script || [];
+  const scriptSection = document.getElementById('playerScript');
+  if (script.length) {
+    scriptSection.style.display = 'block';
+    document.getElementById('playerScriptBody').innerHTML = script.map(s => `
+      <div class="script-card">
+        <div class="script-ts">⏱ ${s.ts}</div>
+        ${s.text}
+      </div>
+    `).join('');
+    // Subtitle sync
+    const subtitle = document.getElementById('playerSubtitle');
+    video.addEventListener('timeupdate', function() {
+      const cur = video.currentTime;
+      const cues = script.map(s => ({ sec: parseTs(s.ts), text: s.text })).sort((a,b) => a.sec-b.sec);
+      let active = null;
+      for (const c of cues) { if (cur >= c.sec) active = c; }
+      if (active && cur < active.sec + 12) {
+        subtitle.textContent = active.text;
+        subtitle.style.display = 'block';
+      } else {
+        subtitle.style.display = 'none';
+      }
+    });
+  } else {
+    scriptSection.style.display = 'none';
+  }
+
+  document.getElementById('playerModal').classList.add('open');
+}
+
+function closePlayer() {
+  const v = document.getElementById('playerVideo');
+  v.pause(); v.src = '';
+  document.getElementById('playerSubtitle').style.display = 'none';
+  document.getElementById('playerModal').classList.remove('open');
+}
+
+// Close modals on overlay click
+document.getElementById('playerModal').addEventListener('click', e => { if (e.target === document.getElementById('playerModal')) closePlayer(); });
+
+// ═══════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════
+function startTimer() {
+  timerSec = 0;
+  const el = document.getElementById('timer');
+  el.className = 'timer recording';
+  timerInterval = setInterval(() => { timerSec++; el.textContent = fmtTime(timerSec); }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timer').className = 'timer';
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════
+function showProgress(label, pct) {
+  document.getElementById('uploadProgress').classList.add('show');
+  document.getElementById('progressLabel').textContent = label;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+function hideProgress() {
+  document.getElementById('uploadProgress').classList.remove('show');
+  document.getElementById('progressFill').style.width = '0%';
+}
+
+// ═══════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════
+function showAlert(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function hideAlert(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function fmtTime(s) {
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return (d.getMonth()+1)+'/'+(d.getDate())+'/'+d.getFullYear();
+}
+function parseTs(ts) {
+  if (!ts) return 0;
+  const p = ts.split(':').map(Number);
+  return p.length === 2 ? p[0]*60+p[1] : p[0];
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+loadLibrary();
+</script>
+</body>
+</html>
