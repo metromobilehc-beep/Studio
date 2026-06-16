@@ -970,13 +970,22 @@ async function beginRecording() {
     document.getElementById('btnStart').disabled = true;
     document.getElementById('btnStop').disabled = false;
     document.getElementById('btnBlurMode').disabled = false;
-    document.getElementById('btnPresets').disabled = false;
+    const pb = document.getElementById('btnPresets');
+    if (pb) pb.disabled = false;
     document.getElementById('recBadge').style.display = 'flex';
     startTimer();
     showAlert('alertRecord', `Recording with ${blurZones.length} blur zone(s) active.`);
   } catch(e) {
     if (e.name !== 'NotAllowedError') showAlert('alertError', 'Could not start screen capture: ' + e.message);
     hipaaConfirmed = false;
+    // Reset UI so user can try again
+    document.getElementById('btnStart').disabled = false;
+    document.getElementById('btnStop').disabled = true;
+    document.getElementById('btnBlurMode').disabled = true;
+    const pb2 = document.getElementById('btnPresets');
+    if (pb2) pb2.disabled = true;
+    document.getElementById('recBadge').style.display = 'none';
+    stopTimer();
   }
 }
 
@@ -989,7 +998,8 @@ function stopRecording() {
   document.getElementById('recBadge').style.display = 'none';
   document.getElementById('btnStop').disabled = true;
   document.getElementById('btnBlurMode').disabled = true;
-  document.getElementById('btnPresets').disabled = true;
+  const presetsBtn = document.getElementById('btnPresets');
+  if (presetsBtn) presetsBtn.disabled = true;
   if (blurModeActive) toggleBlurMode();
   hideAlert('alertRecord');
 }
