@@ -723,7 +723,7 @@ textarea.form-control { resize: vertical; min-height: 68px; }
 // ═══════════════════════════════════════════════
 const SUPABASE_URL = 'https://zxserlkhwkfoqiepurdr.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4c2VybGtod2tmb3FpZXB1cmRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NDM1NDIsImV4cCI6MjA5NjAxOTU0Mn0.cA9LJSn5t4sIbIemdQGQsdwtQFwb-6Q9xIZi48UYq34';
-const BUCKET = 'training-videos';
+const BUCKET = "training-videos";
 const TABLE = 'training_videos';
 const AUDIT_TABLE = 'hipaa_checklist_log';
 
@@ -1034,6 +1034,14 @@ function toggleBlurMode() {
     btn.textContent = '✋ Done Drawing';
     btn.style.background = 'var(--gold)';
     btn.style.color = 'white';
+    // Sync canvas size to wrap before drawing
+    const wrap = document.getElementById('previewWrap');
+    const rect = wrap.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    drawBlurCanvas();
     canvas.addEventListener('mousedown', blurMouseDown);
     canvas.addEventListener('mousemove', blurMouseMove);
     canvas.addEventListener('mouseup', blurMouseUp);
@@ -1048,45 +1056,49 @@ function toggleBlurMode() {
   }
 }
 
-function getRelativePos(canvas, e) {
-  const rect = canvas.getBoundingClientRect();
+function getRelativePos(el, e) {
+  const rect = el.getBoundingClientRect();
   return {
-    x: (e.clientX - rect.left) / rect.width,
-    y: (e.clientY - rect.top) / rect.height
+    x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
+    y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height))
   };
 }
 
 function blurMouseDown(e) {
+  e.preventDefault();
   blurDrawing = true;
-  blurStart = getRelativePos(e.target, e);
+  const canvas = document.getElementById('blurCanvas');
+  blurStart = getRelativePos(canvas, e);
   const box = document.getElementById('blurDrawingBox');
-  const wrap = document.getElementById('previewWrap');
-  const wr = wrap.getBoundingClientRect();
-  box.style.left = (blurStart.x * wr.width) + 'px';
-  box.style.top = (blurStart.y * wr.height) + 'px';
+  const rect = canvas.getBoundingClientRect();
+  box.style.left = (blurStart.x * rect.width) + 'px';
+  box.style.top = (blurStart.y * rect.height) + 'px';
   box.style.width = '0px'; box.style.height = '0px';
   box.style.display = 'block';
 }
 
 function blurMouseMove(e) {
   if (!blurDrawing) return;
-  const pos = getRelativePos(e.target, e);
-  const wrap = document.getElementById('previewWrap');
-  const wr = wrap.getBoundingClientRect();
+  e.preventDefault();
+  const canvas = document.getElementById('blurCanvas');
+  const pos = getRelativePos(canvas, e);
+  const rect = canvas.getBoundingClientRect();
   const box = document.getElementById('blurDrawingBox');
-  const x = Math.min(blurStart.x, pos.x) * wr.width;
-  const y = Math.min(blurStart.y, pos.y) * wr.height;
-  const w = Math.abs(pos.x - blurStart.x) * wr.width;
-  const h = Math.abs(pos.y - blurStart.y) * wr.height;
+  const x = Math.min(blurStart.x, pos.x) * rect.width;
+  const y = Math.min(blurStart.y, pos.y) * rect.height;
+  const w = Math.abs(pos.x - blurStart.x) * rect.width;
+  const h = Math.abs(pos.y - blurStart.y) * rect.height;
   box.style.left = x + 'px'; box.style.top = y + 'px';
   box.style.width = w + 'px'; box.style.height = h + 'px';
 }
 
 function blurMouseUp(e) {
   if (!blurDrawing) return;
+  e.preventDefault();
   blurDrawing = false;
   document.getElementById('blurDrawingBox').style.display = 'none';
-  const pos = getRelativePos(e.target, e);
+  const canvas = document.getElementById('blurCanvas');
+  const pos = getRelativePos(canvas, e);
   const zone = {
     id: Date.now(),
     x: Math.min(blurStart.x, pos.x),
@@ -1105,8 +1117,11 @@ function blurMouseUp(e) {
 function drawBlurCanvas() {
   const canvas = document.getElementById('blurCanvas');
   const wrap = document.getElementById('previewWrap');
-  canvas.width = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
+  const rect = wrap.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   blurZones.forEach(z => {
