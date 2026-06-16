@@ -558,6 +558,20 @@ textarea.form-control { resize: vertical; min-height: 68px; }
             </div>
           </div>
 
+          <!-- Preset panel -->
+          <div id="presetPanel" style="display:none; margin-top:10px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mid-gray);margin-bottom:8px;">⚡ Careficient PHI Presets — click to apply</div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;" id="presetButtons">
+              <button class="btn btn-ghost btn-sm" onclick="applyPreset('cal')">📅 Calendar Grid</button>
+              <button class="btn btn-ghost btn-sm" onclick="applyPreset('header')">👤 Patient Header</button>
+              <button class="btn btn-ghost btn-sm" onclick="applyPreset('schedule')">📋 Schedule List Names</button>
+              <button class="btn btn-ghost btn-sm" onclick="applyPreset('sidebar')">🗂 Left Sidebar</button>
+              <button class="btn btn-ghost btn-sm" onclick="applyPreset('fullscreen')">🚫 Full Screen PHI</button>
+              <button class="btn btn-danger btn-sm" onclick="clearAllZones()">✕ Clear All Zones</button>
+            </div>
+            <div style="font-size:11px;color:var(--mid-gray);margin-top:7px;">Zones are applied as percentages of the visible screen area. Adjust with manual drawing if needed.</div>
+          </div>
+
           <!-- Blur zones list -->
           <div id="blurZoneSection" style="display:none; margin-top:4px;">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mid-gray);margin-bottom:6px;">Active Blur Zones</div>
@@ -956,6 +970,7 @@ async function beginRecording() {
     document.getElementById('btnStart').disabled = true;
     document.getElementById('btnStop').disabled = false;
     document.getElementById('btnBlurMode').disabled = false;
+    document.getElementById('btnPresets').disabled = false;
     document.getElementById('recBadge').style.display = 'flex';
     startTimer();
     showAlert('alertRecord', `Recording with ${blurZones.length} blur zone(s) active.`);
@@ -974,6 +989,7 @@ function stopRecording() {
   document.getElementById('recBadge').style.display = 'none';
   document.getElementById('btnStop').disabled = true;
   document.getElementById('btnBlurMode').disabled = true;
+  document.getElementById('btnPresets').disabled = true;
   if (blurModeActive) toggleBlurMode();
   hideAlert('alertRecord');
 }
@@ -1018,6 +1034,8 @@ function discardRecording() {
   document.getElementById('timer').className = 'timer';
   blurZones = []; postZones = [];
   renderZoneList(); renderPostZoneList();
+  document.getElementById('presetPanel').style.display = 'none';
+  document.getElementById('btnPresets').disabled = true;
   hideAlert('alertRecord'); hideAlert('alertSuccess'); hideAlert('alertError');
   hipaaConfirmed = false;
 }
@@ -1463,6 +1481,93 @@ function closePlayer() {
 
 // Close modals on overlay click
 document.getElementById('playerModal').addEventListener('click', e => { if (e.target === document.getElementById('playerModal')) closePlayer(); });
+
+// ═══════════════════════════════════════════════
+// BLUR PRESETS
+// ═══════════════════════════════════════════════
+
+// Preset zones defined as {x, y, w, h} in 0-1 relative coords
+// Based on typical Careficient screen layout
+const PRESETS = {
+  cal: {
+    label: 'Careficient Calendar Grid',
+    zones: [
+      // The entire calendar grid area (right ~75% of screen, below header)
+      { x: 0.22, y: 0.28, w: 0.78, h: 0.72, label: 'Calendar Grid (Patient Names)' }
+    ]
+  },
+  header: {
+    label: 'Patient Header Bar',
+    zones: [
+      // Top patient name/DOB/MRN header bar
+      { x: 0.0, y: 0.0, w: 1.0, h: 0.14, label: 'Patient Header (Name/DOB/MRN)' }
+    ]
+  },
+  schedule: {
+    label: 'Schedule List Names',
+    zones: [
+      // Calendar For dropdown and name field
+      { x: 0.38, y: 0.08, w: 0.28, h: 0.07, label: 'Calendar For Name' },
+      // Preferred phone
+      { x: 0.38, y: 0.15, w: 0.35, h: 0.05, label: 'Preferred Phone' },
+      // Calendar grid names
+      { x: 0.22, y: 0.28, w: 0.78, h: 0.72, label: 'Schedule Patient Names' }
+    ]
+  },
+  sidebar: {
+    label: 'Left Sidebar (Clinician Name)',
+    zones: [
+      { x: 0.0, y: 0.0, w: 0.22, h: 1.0, label: 'Left Sidebar' }
+    ]
+  },
+  fullscreen: {
+    label: 'Full Screen PHI Cover',
+    zones: [
+      { x: 0.0, y: 0.0, w: 1.0, h: 1.0, label: 'Full Screen' }
+    ]
+  }
+};
+
+function togglePresetPanel() {
+  const panel = document.getElementById('presetPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function applyPreset(key) {
+  const preset = PRESETS[key];
+  if (!preset) return;
+
+  // Sync canvas size first
+  const canvas = document.getElementById('blurCanvas');
+  const wrap = document.getElementById('previewWrap');
+  const rect = wrap.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+
+  // Add zones (avoid duplicates by label)
+  preset.zones.forEach(z => {
+    const exists = blurZones.find(bz => bz.label === z.label);
+    if (!exists) {
+      blurZones.push({ ...z, id: Date.now() + Math.random() });
+    }
+  });
+
+  drawBlurCanvas();
+  renderZoneList();
+
+  // Flash feedback on button
+  showAlert('alertRecord', `✅ "${preset.label}" preset applied — ${preset.zones.length} zone(s) added. Add manual zones if needed.`);
+  setTimeout(() => hideAlert('alertRecord'), 3000);
+}
+
+function clearAllZones() {
+  if (!confirm('Clear all blur zones?')) return;
+  blurZones = [];
+  drawBlurCanvas();
+  renderZoneList();
+}
 
 // ═══════════════════════════════════════════════
 // TIMER
